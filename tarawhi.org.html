@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>তারাবিহ রুটিন ২০২৬ | শারীফ ও সাইফুল</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+            font-family: 'Hind Siliguri', sans-serif; 
+            margin: 0; overflow-x: hidden;
+            color: #e2e8f0; min-height: 100vh;
+        }
+        .snow-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        .flake { position: absolute; background: white; border-radius: 50%; opacity: 0.8; box-shadow: 0 0 8px rgba(255, 255, 255, 0.9); animation: drift linear infinite; }
+        @keyframes drift { 0% { transform: translateY(-10vh) translateX(0) scale(0.5); } 100% { transform: translateY(110vh) translateX(25px) scale(1.2); } }
+        
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(12px); 
+            border-radius: 28px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7); 
+            padding: 1.5rem; position: relative; z-index: 10; 
+        }
+
+        .search-box { 
+            background: rgba(255, 255, 255, 0.04); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: 18px; color: white; outline: none; transition: 0.4s; 
+        }
+        .search-box:focus { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        .search-box::placeholder { font-weight: 300; opacity: 0.5; }
+
+        .glow-rod { position: relative; padding: 0 15px; }
+        .glow-rod::after { 
+            content: ""; position: absolute; right: 0; top: 35%; 
+            height: 30%; width: 1.5px; background: rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); 
+        }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+    <div class="snow-layer" id="snowContainer"></div>
+
+    <div class="max-w-4xl mx-auto relative">
+        <header class="text-center mb-10 pt-4">
+            <h1 class="text-4xl md:text-6xl font-bold mb-3 text-white tracking-tight">পবিত্র মাহে রমজান ২০২৬</h1>
+            <h2 class="text-xl md:text-2xl font-light text-blue-400 tracking-[0.3em] uppercase">খতমে তারাবি রুটিন</h2>
+        </header>
+
+        <div class="mb-12 flex flex-col items-center">
+            <input type="number" id="searchInput" onkeyup="searchFunction()" 
+                   placeholder="Jump to your desired PARA" 
+                   class="search-box p-4 w-full max-w-sm text-center text-xl font-light">
+        </div>
+
+        <div class="glass-card">
+            <div class="overflow-x-auto">
+                <table class="w-full text-center">
+                    <thead>
+                        <tr class="text-blue-300 font-bold text-sm md:text-lg border-b border-white/10">
+                            <th class="pb-6 glow-rod">তারাবিহ</th>
+                            <th class="pb-6 glow-rod text-white">হাফেজ শারীফ</th>
+                            <th class="pb-6 text-white">হাফেজ সাইফুল</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableData" class="text-gray-300"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tableData = document.getElementById('tableData');
+        let currentPara = 1, currentPage = 1;
+
+        for (let day = 1; day <= 27; day++) {
+            let limit = (day <= 6) ? 15 : 10;
+            
+            function getRange(pages) {
+                let sP = currentPara, sPg = currentPage, eP, ePg;
+                let rem = 21 - sPg;
+                if (pages <= rem) { eP = sP; ePg = sPg + pages - 1; }
+                else { eP = sP + 1; ePg = pages - rem; }
+                
+                let data = { text: `পারা ${sP}(${sPg}) - ${eP}(${ePg})`, paras: [sP, eP] };
+                currentPara = (ePg === 20) ? eP + 1 : eP;
+                currentPage = (ePg === 20) ? 1 : ePg + 1;
+                return data;
+            }
+
+            let part1 = getRange(limit);
+            let part2 = getRange(limit);
+
+            // রোটেশন লজিক: শারীফ ও সাইফুল কলামে শুধু তিলাওয়াতের অংশ বসবে
+            let sharifText, saifulText;
+            if (day % 2 !== 0) {
+                sharifText = part1.text;
+                saifulText = part2.text;
+            } else {
+                saifulText = part1.text;
+                sharifText = part2.text;
+            }
+
+            let allParas = [...new Set([...part1.paras, ...part2.paras])];
+
+            tableData.innerHTML += `
+                <tr class="border-b border-white/5 transition-all hover:bg-white/5" data-paras="${allParas.join(',')}">
+                    <td class="py-5 font-bold text-2xl glow-rod text-white">${day}</td>
+                    <td class="py-5 text-sm md:text-base glow-rod">${sharifText}</td>
+                    <td class="py-5 text-sm md:text-base">${saifulText}</td>
+                </tr>`;
+        }
+
+        // তুষারপাত জেনারেশন
+        const snow = document.getElementById('snowContainer');
+        for (let i = 0; i < 75; i++) {
+            const f = document.createElement('div');
+            f.className = 'flake';
+            f.style.width = f.style.height = Math.random() * 2 + 1 + 'px';
+            f.style.left = Math.random() * 100 + 'vw';
+            f.style.animationDuration = Math.random() * 8 + 6 + 's';
+            f.style.animationDelay = Math.random() * 5 + 's';
+            snow.appendChild(f);
+        }
+
+        function searchFunction() {
+            let input = document.getElementById("searchInput").value;
+            let rows = tableData.getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                let pList = rows[i].getAttribute("data-paras").split(',');
+                rows[i].style.display = (input === "" || pList.includes(input)) ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
